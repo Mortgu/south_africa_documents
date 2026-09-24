@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { DocumentEntry } from "@/content/documents";
 import { DocumentCard } from "@/components/DocumentCard";
 import { CheckIcon } from "@/components/icons";
@@ -20,14 +20,21 @@ type Props = {
   verifiedEmail: string | null;
   /** Slug of the document the visitor just unlocked via the email link. */
   unlockedSlug?: string;
+  /** The email link was invalid or expired. */
+  verifyFailed?: boolean;
 };
 
-export function DocumentGrid({ documents, verifiedEmail, unlockedSlug }: Props) {
+export function DocumentGrid({ documents, verifiedEmail, unlockedSlug, verifyFailed }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [email, setEmail] = useState(verifiedEmail);
   const [modalDoc, setModalDoc] = useState<PublicDocument | null>(
     () => (verifiedEmail && documents.find((d) => d.slug === unlockedSlug)) || null,
   );
+
+  // Drop ?unlocked / ?verify from the URL so a reload doesn't reopen the modal.
+  useEffect(() => {
+    if (unlockedSlug || verifyFailed) window.history.replaceState(null, "", window.location.pathname);
+  }, [unlockedSlug, verifyFailed]);
 
   const verified = email !== null;
   const count = (access: PublicDocument["access"]) =>
@@ -77,6 +84,13 @@ export function DocumentGrid({ documents, verifiedEmail, unlockedSlug }: Props) 
           })}
         </div>
       </div>
+
+      {verifyFailed && !verified && (
+        <div role="alert" className="border border-error px-6 py-[18px] text-[15px] text-error">
+          This confirmation link is invalid or has expired. Please request a new one via
+          &ldquo;Unlock&rdquo;.
+        </div>
+      )}
 
       {verified && (
         <div role="status" className="flex items-center gap-4 bg-ink px-6 py-[18px] text-[15px] text-white">

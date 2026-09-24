@@ -17,7 +17,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function UnlockModal({ doc, verifiedEmail, onClose }: Props) {
+export function UnlockModal({ doc, verifiedEmail, onVerified, onClose }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [step, setStep] = useState<Step>(verifiedEmail ? "done" : "form");
   const [email, setEmail] = useState("");
@@ -31,6 +31,24 @@ export function UnlockModal({ doc, verifiedEmail, onClose }: Props) {
     const dialog = dialogRef.current;
     if (dialog && !dialog.open) dialog.showModal();
   }, []);
+
+  // While waiting for the email link: detect when it's opened in another tab of this browser.
+  useEffect(() => {
+    if (step !== "sent") return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/session", { cache: "no-store" });
+        const { email } = (await res.json()) as { email: string | null };
+        if (email) {
+          onVerified(email);
+          setStep("done");
+        }
+      } catch {
+        // Ignore network hiccups; the next poll retries.
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [step, onVerified]);
 
   const emailOk = EMAIL_PATTERN.test(email.trim());
   const showEmailError = tried && !emailOk;
@@ -158,12 +176,16 @@ export function UnlockModal({ doc, verifiedEmail, onClose }: Props) {
             <div className="flex">
               <button
                 type="button"
-                onClick={() => setStep("form")}
+                onClick={() => {
+                  setServerError(null);
+                  setStep("form");
+                }}
                 className="btn btn-ghost px-5 pt-[17px] pb-[15px]"
               >
                 Change address
               </button>
             </div>
+            {serverError && <span className="-mt-3 text-sm text-error">{serverError}</span>}
             <p className="m-0 text-sm text-muted">
               Didn&apos;t receive an email? Check your spam folder or{" "}
               <button
