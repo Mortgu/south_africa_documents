@@ -6,10 +6,8 @@ export type DocumentEntry = {
   category: string;
   title: string;
   description: string;
-  /** Object key inside the S3 bucket */
-  s3Key: string;
-  /** File name the visitor's browser saves the download as */
-  fileName: string;
+  /** Pathname in the private Vercel Blob store. Its basename is the downloaded file name. */
+  storageKey: string;
   /** Human-readable size, e.g. "2.4 MB" */
   size: string;
   access: DocumentAccess;
@@ -22,8 +20,7 @@ export const documents: DocumentEntry[] = [
     category: "Company",
     title: "Company Profile",
     description: "[SHORT DESCRIPTION OF THE DOCUMENT]",
-    s3Key: "public/company-profile.pdf",
-    fileName: "dignum-company-profile.pdf",
+    storageKey: "public/dignum-company-profile.pdf",
     size: "[SIZE]",
     access: "public",
   },
@@ -32,8 +29,7 @@ export const documents: DocumentEntry[] = [
     category: "Services",
     title: "Service Overview Backup, Recovery & Archive",
     description: "[SHORT DESCRIPTION OF THE DOCUMENT]",
-    s3Key: "public/backup-recovery-archive.pdf",
-    fileName: "dignum-backup-recovery-archive.pdf",
+    storageKey: "public/dignum-backup-recovery-archive.pdf",
     size: "[SIZE]",
     access: "public",
   },
@@ -42,8 +38,7 @@ export const documents: DocumentEntry[] = [
     category: "Services",
     title: "Service Overview Server, Storage & Cloud",
     description: "[SHORT DESCRIPTION OF THE DOCUMENT]",
-    s3Key: "public/server-storage-cloud.pdf",
-    fileName: "dignum-server-storage-cloud.pdf",
+    storageKey: "public/dignum-server-storage-cloud.pdf",
     size: "[SIZE]",
     access: "public",
   },
@@ -52,8 +47,7 @@ export const documents: DocumentEntry[] = [
     category: "White Paper",
     title: "Backup Resilience vs. Ransomware",
     description: "[SHORT DESCRIPTION OF THE DOCUMENT]",
-    s3Key: "protected/backup-resilience-ransomware.pdf",
-    fileName: "dignum-backup-resilience-ransomware.pdf",
+    storageKey: "protected/dignum-backup-resilience-ransomware.pdf",
     size: "[SIZE]",
     access: "protected",
   },
@@ -62,8 +56,7 @@ export const documents: DocumentEntry[] = [
     category: "Product Sheet",
     title: "dAS – dignum Auditing toolSet",
     description: "[SHORT DESCRIPTION OF THE DOCUMENT]",
-    s3Key: "protected/das-auditing-toolset.pdf",
-    fileName: "dignum-das-auditing-toolset.pdf",
+    storageKey: "protected/dignum-das-auditing-toolset.pdf",
     size: "[SIZE]",
     access: "protected",
   },
@@ -72,8 +65,7 @@ export const documents: DocumentEntry[] = [
     category: "Checklist",
     title: "Backup Risk Assessment",
     description: "[SHORT DESCRIPTION OF THE DOCUMENT]",
-    s3Key: "protected/backup-risk-assessment.pdf",
-    fileName: "dignum-backup-risk-assessment.pdf",
+    storageKey: "protected/dignum-backup-risk-assessment.pdf",
     size: "[SIZE]",
     access: "protected",
   },

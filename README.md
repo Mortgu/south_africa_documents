@@ -2,7 +2,7 @@
 
 A lean site where visitors download documents. Some documents are free; protected ones are unlocked once via an email confirmation link.
 
-Stack: Next.js (App Router) · Tailwind CSS · S3-compatible storage · Postgres (Drizzle) · Resend
+Stack: Next.js (App Router) · Tailwind CSS · Vercel Blob · Postgres (Drizzle) · Resend
 
 ## Development
 
@@ -14,7 +14,7 @@ npm run dev
 
 ## Adding a document
 
-1. Upload the file to the S3 bucket (`public/…` or `protected/…`).
+1. Upload the file to the private Vercel Blob store under `public/…` or `protected/…`. The file name is what visitors download, e.g. `protected/dignum-risk-assessment.pdf`.
 2. Add an entry to `src/content/documents.ts` (`access: "public"` or `"protected"`).
 
 ## Design
