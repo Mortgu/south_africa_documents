@@ -13,8 +13,14 @@ const sourceSans = Source_Sans_3({
 const description =
   "Product sheets, white papers and checklists to download. Some documents are freely available, others require a one-time email confirmation.";
 
+// `||` rather than `??`: an env var set to an empty string must fall through as well.
+const siteUrl =
+  process.env.APP_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
+  "http://localhost:3000";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: { default: "Downloads | dignum", template: "%s | dignum" },
   description,
   openGraph: {
