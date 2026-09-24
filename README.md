@@ -9,6 +9,7 @@ Stack: Next.js (App Router) · Tailwind CSS · Vercel Blob · Postgres (Drizzle)
 ```bash
 npm install
 cp .env.example .env.local   # fill in values
+npm run db:migrate           # create/update tables
 npm run dev
 ```
 

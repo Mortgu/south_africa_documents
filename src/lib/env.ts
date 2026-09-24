@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const schema = z.object({
   BLOB_READ_WRITE_TOKEN: z.string().min(1),
+  DIGNUM_DATABASE_URL: z.url(),
 });
 
 let cached: z.infer<typeof schema> | undefined;
