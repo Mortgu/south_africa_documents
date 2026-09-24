@@ -17,3 +17,20 @@ export function env() {
   cached ??= schema.parse(process.env);
   return cached;
 }
+
+const notifySchema = z.object({
+  NOTIFY_EMAILS: z
+    .string()
+    .transform((v) => v.split(",").map((e) => e.trim()).filter(Boolean))
+    .pipe(z.array(z.email()).min(1)),
+  NOTIFY_DELAY_HOURS: z.coerce.number().min(0).default(24),
+  CRON_SECRET: z.string().min(16),
+});
+
+let notifyCached: z.infer<typeof notifySchema> | undefined;
+
+/** Settings for the staff notification job, validated separately so the site runs without them. */
+export function notifyEnv() {
+  notifyCached ??= notifySchema.parse(process.env);
+  return notifyCached;
+}

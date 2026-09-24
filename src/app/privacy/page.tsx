@@ -25,8 +25,8 @@ export default function PrivacyPage() {
       <LegalSection title="Freely available documents">
         <p className="m-0 text-body">
           You can download freely available documents without providing any personal
-          information. We record which document was downloaded and when, without linking this to
-          you.
+          information. We record which document was downloaded and when. Only if you have
+          registered (see below) is this record linked to your registration.
         </p>
       </LegalSection>
 
@@ -40,11 +40,13 @@ export default function PrivacyPage() {
           <li>your function and mobile phone number, if you provide them,</li>
           <li>your email address,</li>
           <li>when you gave your consent and confirmed your email address,</li>
-          <li>which protected documents you downloaded and when.</li>
+          <li>which documents you downloaded and when.</li>
         </ul>
         <p className="m-0 text-body">
-          We use this information to give you access to the documents and to understand who is
-          interested in them. Until you confirm your email address, your details are kept only
+          We use this information to give you access to the documents, to understand who is
+          interested in them and to get in touch with you about them. For this purpose, your
+          details and the documents you downloaded are forwarded internally by email to the
+          responsible dignum team members about a day after your registration. Until you confirm your email address, your details are kept only
           together with the confirmation link, which expires after 30 minutes. You can withdraw
           your consent at any time by emailing us; we will then delete your information.
         </p>

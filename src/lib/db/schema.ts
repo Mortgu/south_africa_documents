@@ -20,7 +20,12 @@ export const subscribers = pgTable("subscribers", {
   phone: text("phone"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }),
+  /** First email confirmation. */
   verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  /** Most recent email confirmation (re-registrations update this). */
+  lastVerifiedAt: timestamp("last_verified_at", { withTimezone: true }),
+  /** When staff were last notified about this subscriber. */
+  notifiedAt: timestamp("notified_at", { withTimezone: true }),
   consentAt: timestamp("consent_at", { withTimezone: true }),
 });
 

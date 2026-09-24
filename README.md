@@ -21,3 +21,13 @@ npm run dev
 ## Design
 
 The design mockups live in `design/` (reference only). View them with `python3 -m http.server` inside a mockup folder.
+
+## Staff notifications
+
+An hourly Vercel Cron job (`vercel.json` → `/api/cron/notify`) emails `NOTIFY_EMAILS` about each
+registration once `NOTIFY_DELAY_HOURS` have passed since the email confirmation, including the
+documents downloaded since. Trigger it locally with:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/notify
+```

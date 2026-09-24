@@ -12,7 +12,8 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/download
     return new NextResponse("Document not found", { status: 404 });
   }
 
-  const subscriber = doc.access === "protected" ? await getSubscriber() : null;
+  // Also resolved for free documents, so signed-in visitors' downloads show up in staff notifications.
+  const subscriber = await getSubscriber();
   if (doc.access === "protected" && !subscriber) {
     return NextResponse.redirect(new URL("/", request.url));
   }

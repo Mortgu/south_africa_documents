@@ -191,7 +191,8 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
           <Link href="/privacy" target="_blank">
             privacy notice
           </Link>{" "}
-          and consent to the processing of my details. *
+          and consent to the processing of my details and to dignum contacting me about the
+          documents. *
         </span>
       </label>
       {errors.consent && <span className="-mt-2 text-sm text-error">{errors.consent}</span>}

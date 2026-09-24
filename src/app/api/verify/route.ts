@@ -30,12 +30,19 @@ export async function GET(request: NextRequest) {
   };
   const [subscriber] = await db()
     .insert(subscribers)
-    .values({ email: row.email, ...profile, verifiedAt: new Date(), consentAt: row.createdAt })
+    .values({
+      email: row.email,
+      ...profile,
+      verifiedAt: new Date(),
+      lastVerifiedAt: new Date(),
+      consentAt: row.createdAt,
+    })
     .onConflictDoUpdate({
       target: subscribers.email,
       set: {
         ...profile,
         updatedAt: new Date(),
+        lastVerifiedAt: new Date(),
         verifiedAt: sql`coalesce(${subscribers.verifiedAt}, now())`,
         consentAt: row.createdAt,
       },
