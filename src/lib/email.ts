@@ -5,13 +5,13 @@ import { env } from "@/lib/env";
 
 let resend: Resend | undefined;
 
-export async function sendVerificationEmail(to: string, documentTitle: string, verifyUrl: string) {
+export async function sendVerificationEmail(to: string, firstName: string, verifyUrl: string) {
   resend ??= new Resend(env().RESEND_API_KEY);
   const { error } = await resend.emails.send({
     from: env().EMAIL_FROM,
     to,
     subject: "Confirm your email address",
-    react: VerifyEmail({ documentTitle, verifyUrl }),
+    react: VerifyEmail({ firstName, verifyUrl }),
   });
   if (error) throw new Error(`Resend: ${error.message}`);
 }

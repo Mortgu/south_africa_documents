@@ -51,23 +51,9 @@ export const DownloadIcon = (p: IconProps) => (
   </Icon>
 );
 
-export const CloseIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M6 6l12 12" />
-    <path d="M18 6 6 18" />
-  </Icon>
-);
-
 export const MailIcon = (p: IconProps) => (
   <Icon {...p}>
     <rect x="3" y="5" width="18" height="14" />
     <path d="m3 7 9 6 9-6" />
-  </Icon>
-);
-
-export const CheckCircleIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="m8 12 3 3 5-6" />
   </Icon>
 );

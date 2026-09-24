@@ -1,0 +1,1 @@
+ALTER TABLE "verification_tokens" DROP COLUMN "document_slug";

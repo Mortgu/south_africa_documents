@@ -2,7 +2,6 @@
 
 import { and, count, eq, gt } from "drizzle-orm";
 import { z } from "zod";
-import { findDocument } from "@/content/documents";
 import { db } from "@/lib/db";
 import { verificationTokens } from "@/lib/db/schema";
 import { sendVerificationEmail } from "@/lib/email";
@@ -11,29 +10,43 @@ import { createToken, TOKEN_TTL_MS } from "@/lib/tokens";
 
 const MAX_REQUESTS_PER_HOUR = 3;
 
+const required = (message: string) => z.string().trim().min(1, message).max(100);
+const optional = (schema: z.ZodString) =>
+  z
+    .string()
+    .trim()
+    .transform((v) => v || undefined)
+    .pipe(schema.optional());
+
 const schema = z.object({
-  email: z.email().max(254),
-  consent: z.literal(true),
-  slug: z.string().min(1),
+  firstName: required("Please enter your first name."),
+  lastName: required("Please enter your last name."),
+  company: required("Please enter your company."),
+  jobTitle: optional(z.string().max(100)),
+  phone: optional(z.string().regex(/^[+()\d\s/-]{6,25}$/, "Please enter a valid phone number.")),
+  email: z.string().trim().toLowerCase().pipe(z.email("Please enter a valid email address.").max(254)),
+  consent: z.literal(true, "Please accept the privacy notice."),
 });
 
-export type RequestAccessResult = { ok: true } | { ok: false; error: string };
+export type RegistrationInput = z.input<typeof schema>;
+export type RegistrationField = keyof RegistrationInput;
 
-export async function requestAccess(input: {
-  email: string;
-  consent: boolean;
-  slug: string;
-}): Promise<RequestAccessResult> {
-  const parsed = schema.safeParse({ ...input, email: input.email.trim().toLowerCase() });
+export type RequestAccessResult =
+  | { ok: true }
+  | { ok: false; error?: string; fieldErrors?: Partial<Record<RegistrationField, string>> };
+
+export async function requestAccess(input: RegistrationInput): Promise<RequestAccessResult> {
+  const parsed = schema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: "Please enter a valid email address and accept the privacy notice." };
+    const fieldErrors: Partial<Record<RegistrationField, string>> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0] as RegistrationField;
+      fieldErrors[field] ??= issue.message;
+    }
+    return { ok: false, fieldErrors };
   }
-  const { email, slug } = parsed.data;
-
-  const doc = findDocument(slug);
-  if (!doc || doc.access !== "protected") {
-    return { ok: false, error: "This document is not available." };
-  }
+  const { email, firstName, lastName, company, jobTitle, phone } = parsed.data;
+  const profile = { firstName, lastName, company, jobTitle, phone };
 
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
   const [{ recent }] = await db()
@@ -47,18 +60,13 @@ export async function requestAccess(input: {
   const { token, hash } = createToken();
   await db()
     .insert(verificationTokens)
-    .values({
-      tokenHash: hash,
-      email,
-      documentSlug: slug,
-      expiresAt: new Date(Date.now() + TOKEN_TTL_MS),
-    });
+    .values({ tokenHash: hash, email, profile, expiresAt: new Date(Date.now() + TOKEN_TTL_MS) });
 
   const verifyUrl = new URL("/api/verify", env().APP_URL);
   verifyUrl.searchParams.set("token", token);
 
   try {
-    await sendVerificationEmail(email, doc.title, verifyUrl.toString());
+    await sendVerificationEmail(email, profile.firstName, verifyUrl.toString());
   } catch (error) {
     console.error("Failed to send verification email", error);
     return { ok: false, error: "We couldn't send the email. Please try again later." };

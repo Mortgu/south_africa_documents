@@ -21,17 +21,28 @@ export async function GET(request: NextRequest) {
     .returning();
   if (!row) return fail();
 
+  const profile = {
+    firstName: row.profile.firstName,
+    lastName: row.profile.lastName,
+    company: row.profile.company,
+    jobTitle: row.profile.jobTitle ?? null,
+    phone: row.profile.phone ?? null,
+  };
   const [subscriber] = await db()
     .insert(subscribers)
-    .values({ email: row.email, verifiedAt: new Date(), consentAt: row.createdAt })
+    .values({ email: row.email, ...profile, verifiedAt: new Date(), consentAt: row.createdAt })
     .onConflictDoUpdate({
       target: subscribers.email,
-      set: { verifiedAt: sql`coalesce(${subscribers.verifiedAt}, now())`, consentAt: row.createdAt },
+      set: {
+        ...profile,
+        updatedAt: new Date(),
+        verifiedAt: sql`coalesce(${subscribers.verifiedAt}, now())`,
+        consentAt: row.createdAt,
+      },
     })
     .returning({ id: subscribers.id, email: subscribers.email });
 
-  const target = new URL("/", request.url);
-  target.searchParams.set("unlocked", row.documentSlug);
+  const target = new URL("/?verified=1#protected", request.url);
   const response = NextResponse.redirect(target);
   await setSessionCookie(response, { subscriberId: subscriber.id, email: subscriber.email });
   return response;

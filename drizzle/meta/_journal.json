@@ -8,6 +8,20 @@
       "when": 1790236883740,
       "tag": "0000_gigantic_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790256241014,
+      "tag": "0001_drop_token_document_slug",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790256241333,
+      "tag": "0002_registration_profile",
+      "breakpoints": true
     }
   ]
 }

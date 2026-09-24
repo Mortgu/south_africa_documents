@@ -1,7 +1,10 @@
 import "server-only";
+import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { subscribers } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 
 const COOKIE_NAME = "dl_session";
@@ -30,7 +33,7 @@ export async function setSessionCookie(response: NextResponse, session: Session)
 }
 
 /** Reads and verifies the session cookie of the current request. */
-export async function getSession(): Promise<Session | null> {
+async function getSession(): Promise<Session | null> {
   const jwt = (await cookies()).get(COOKIE_NAME)?.value;
   if (!jwt) return null;
   try {
@@ -40,4 +43,32 @@ export async function getSession(): Promise<Session | null> {
   } catch {
     return null;
   }
+}
+
+export type Subscriber = {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+};
+
+/**
+ * The verified visitor of the current request, loaded from the database.
+ * Returns null without a valid cookie or when the subscriber has been deleted.
+ */
+export async function getSubscriber(): Promise<Subscriber | null> {
+  const session = await getSession();
+  if (!session) return null;
+  const [subscriber] = await db()
+    .select({
+      id: subscribers.id,
+      email: subscribers.email,
+      firstName: subscribers.firstName,
+      lastName: subscribers.lastName,
+      company: subscribers.company,
+    })
+    .from(subscribers)
+    .where(eq(subscribers.id, session.subscriberId));
+  return subscriber ?? null;
 }

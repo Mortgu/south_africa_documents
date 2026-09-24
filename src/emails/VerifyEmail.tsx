@@ -11,23 +11,24 @@ import {
 } from "@react-email/components";
 import { company } from "@/content/company";
 
-type Props = { documentTitle: string; verifyUrl: string };
+type Props = { firstName: string; verifyUrl: string };
 
 const font = '"Source Sans 3", "Source Sans Pro", -apple-system, "Segoe UI", sans-serif';
 
-export function VerifyEmail({ documentTitle, verifyUrl }: Props) {
+export function VerifyEmail({ firstName, verifyUrl }: Props) {
   return (
     <Html lang="en">
       <Head />
-      <Preview>Confirm your email address to download “{documentTitle}”</Preview>
+      <Preview>Confirm your email address to unlock the protected documents</Preview>
       <Body style={{ margin: 0, background: "#f2f2f2", fontFamily: font, color: "#151515" }}>
         <Container style={{ maxWidth: 560, margin: "40px auto", background: "#ffffff", padding: 48 }}>
-          <Text style={eyebrow}>Unlock document</Text>
+          <Text style={eyebrow}>Unlock documents</Text>
           <Heading as="h1" style={{ margin: "0 0 16px", fontSize: 28, lineHeight: 1.3, fontWeight: 300 }}>
             Confirm your email address
           </Heading>
+          <Text style={body}>Hi {firstName},</Text>
           <Text style={body}>
-            Click the button below to confirm your email address. “{documentTitle}” and all other
+            Thank you for registering. Click the button below to confirm your email address – the
             protected documents will then be unlocked for you.
           </Text>
           <Button href={verifyUrl} style={button}>

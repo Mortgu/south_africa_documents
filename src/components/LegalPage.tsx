@@ -5,7 +5,7 @@ export function LegalPage({ title, children }: { title: string; children: ReactN
   return (
     <>
       <Hero title={title} />
-      <main className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-12 sm:px-10 lg:py-20">
+      <main className="flex w-full max-w-[880px] flex-col gap-10 px-4 py-12 sm:px-10 lg:px-20 lg:py-[72px]">
         {children}
       </main>
     </>

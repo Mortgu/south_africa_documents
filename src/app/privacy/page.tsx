@@ -30,28 +30,31 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="Documents that require your email address">
+      <LegalSection title="Registration for protected documents">
         <p className="m-0 text-body">
-          To unlock protected documents, we ask for your email address and send you a
-          confirmation link. With your consent, we store:
+          To unlock protected documents, you register with a short form and confirm your email
+          address via a link we send you. With your consent, we store:
         </p>
         <ul className="m-0 flex list-disc flex-col gap-1 pl-6 text-body">
+          <li>your first name, last name and company,</li>
+          <li>your function and mobile phone number, if you provide them,</li>
           <li>your email address,</li>
-          <li>when you gave your consent and confirmed your address,</li>
+          <li>when you gave your consent and confirmed your email address,</li>
           <li>which protected documents you downloaded and when.</li>
         </ul>
         <p className="m-0 text-body">
-          We use this information to give you access to the documents and to understand which
-          documents are of interest. The confirmation link expires after 30 minutes. You can
-          withdraw your consent at any time by emailing us; we will then delete your information.
+          We use this information to give you access to the documents and to understand who is
+          interested in them. Until you confirm your email address, your details are kept only
+          together with the confirmation link, which expires after 30 minutes. You can withdraw
+          your consent at any time by emailing us; we will then delete your information.
         </p>
       </LegalSection>
 
       <LegalSection title="Cookies">
         <p className="m-0 text-body">
           After you confirm your email address, we set a single, technically necessary cookie
-          (&ldquo;dl_session&rdquo;) that keeps the protected documents unlocked in your browser
-          for 30 days. We do not use tracking or advertising cookies.
+          (&ldquo;dl_session&rdquo;) that keeps you signed in and the protected documents unlocked
+          in your browser for 30 days. We do not use tracking or advertising cookies.
         </p>
       </LegalSection>
 
@@ -74,8 +77,8 @@ export default function PrivacyPage() {
 
       <LegalSection title="How long we keep your information">
         <p className="m-0 text-body">
-          We keep your email address and download history until you withdraw your consent or ask
-          us to delete them.
+          We keep your registration details and download history until you withdraw your consent
+          or ask us to delete them.
         </p>
       </LegalSection>
 
