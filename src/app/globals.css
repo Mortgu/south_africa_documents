@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-source-sans), -apple-system, "Segoe UI", sans-serif;
+
+  --color-ink: #151515;
+  --color-accent: #d4360f;
+  --color-accent-bright: #fb4c20;
+  --color-slate: #2c343b;
+  --color-sky: #8fbbc8;
+  --color-muted: #6b6b6b;
+  --color-body: #444444;
+  --color-line: #e1e1e1;
+  --color-line-light: #efefef;
+  --color-mist: #f2f2f2;
+  --color-field: #efefef;
+  --color-error: #c42f0b;
+  --color-night: #181f2c;
+
+  --shadow-card: 0 0 10px 0 rgba(0, 0, 0, 0.17);
+  --shadow-dialog: 0 0 10px 0 rgba(0, 0, 0, 0.27);
+}
+
+@layer base {
+  body {
+    background: #ffffff;
+    color: var(--color-ink);
+    letter-spacing: 0.04em;
+  }
+
+  a {
+    color: var(--color-accent);
+    transition: color 0.25s;
+  }
+
+  a:hover {
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-width: 2px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      color 0.3s;
+  }
+
+  .btn-primary,
+  a.btn-primary {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: #ffffff;
+  }
+  .btn-primary:hover,
+  a.btn-primary:hover {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: #ffffff;
+  }
+
+  .btn-dark {
+    border-color: var(--color-slate);
+    background: var(--color-slate);
+    color: #ffffff;
+  }
+  .btn-dark:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+
+  .btn-ghost {
+    border-color: var(--color-ink);
+    background: #ffffff;
+    color: var(--color-ink);
+  }
+  .btn-ghost:hover {
+    background: var(--color-ink);
+    color: #ffffff;
+  }
+
+  .btn:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
