@@ -10,10 +10,19 @@ const sourceSans = Source_Sans_3({
   weight: ["200", "300", "400", "500", "600", "700"],
 });
 
+const description =
+  "Product sheets, white papers and checklists to download. Some documents are freely available, others require a one-time email confirmation.";
+
 export const metadata: Metadata = {
-  title: "Downloads | dignum",
-  description:
-    "Product sheets, white papers and checklists to download. Some documents are freely available, others require a one-time email confirmation.",
+  metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
+  title: { default: "Downloads | dignum", template: "%s | dignum" },
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "dignum",
+    title: "Downloads | dignum",
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -113,6 +113,7 @@ export function UnlockModal({ doc, verifiedEmail, onVerified, onClose }: Props) 
               <input
                 id="dl-email"
                 type="email"
+                autoFocus
                 autoComplete="email"
                 placeholder="name@company.com"
                 value={email}

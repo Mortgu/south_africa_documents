@@ -9,6 +9,7 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
+import { company } from "@/content/company";
 
 type Props = { documentTitle: string; verifyUrl: string };
 
@@ -37,7 +38,9 @@ export function VerifyEmail({ documentTitle, verifyUrl }: Props) {
             email.
           </Text>
           <Hr style={{ borderColor: "#efefef", margin: "32px 0 16px" }} />
-          <Text style={{ margin: 0, fontSize: 13, color: "#6b6b6b" }}>dignum GmbH</Text>
+          <Text style={{ margin: 0, fontSize: 13, color: "#6b6b6b" }}>
+            {company.name} · {company.street}, {company.city}
+          </Text>
         </Container>
       </Body>
     </Html>
