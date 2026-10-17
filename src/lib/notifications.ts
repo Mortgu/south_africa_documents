@@ -15,6 +15,9 @@ const formatDate = (date: Date) =>
     timeZone: "Africa/Johannesburg",
   }).format(date) + " SAST";
 
+/** Not yet reported since the latest email confirmation. */
+const notNotified = or(isNull(subscribers.notifiedAt), lt(subscribers.notifiedAt, subscribers.lastVerifiedAt));
+
 /**
  * Emails staff about every subscriber whose (latest) email confirmation is at least
  * NOTIFY_DELAY_HOURS old and who hasn't been reported since, including the documents
@@ -31,7 +34,7 @@ export async function notifyDueSubscribers(): Promise<{ notified: number; failed
       and(
         isNotNull(subscribers.lastVerifiedAt),
         lte(subscribers.lastVerifiedAt, cutoff),
-        or(isNull(subscribers.notifiedAt), lt(subscribers.notifiedAt, subscribers.lastVerifiedAt)),
+        notNotified,
       ),
     )
     .orderBy(asc(subscribers.lastVerifiedAt))
@@ -42,6 +45,15 @@ export async function notifyDueSubscribers(): Promise<{ notified: number; failed
 
   for (const s of due) {
     const confirmedAt = s.lastVerifiedAt!;
+    // Claim the subscriber first, so overlapping runs (e.g. a manual trigger during the
+    // hourly one) never email staff twice. Released again below if sending fails.
+    const [claimed] = await db()
+      .update(subscribers)
+      .set({ notifiedAt: new Date() })
+      .where(and(eq(subscribers.id, s.id), notNotified))
+      .returning({ id: subscribers.id });
+    if (!claimed) continue;
+
     try {
       const rows = await db()
         .select({ slug: downloads.documentSlug, at: downloads.createdAt })
@@ -67,14 +79,17 @@ export async function notifyDueSubscribers(): Promise<{ notified: number; failed
           })),
           delayHours: NOTIFY_DELAY_HOURS,
         },
-        `notify-${s.id}-${confirmedAt.getTime()}`,
       );
 
-      await db().update(subscribers).set({ notifiedAt: new Date() }).where(eq(subscribers.id, s.id));
       notified++;
     } catch (error) {
       // Retried on the next run.
       console.error(`Failed to notify staff about subscriber ${s.id}`, error);
+      await db()
+        .update(subscribers)
+        .set({ notifiedAt: s.notifiedAt })
+        .where(eq(subscribers.id, s.id))
+        .catch((e) => console.error(`Failed to release subscriber ${s.id}`, e));
       failed++;
     }
   }

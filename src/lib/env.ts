@@ -3,9 +3,14 @@ import { z } from "zod";
 
 const schema = z.object({
   APP_URL: z.url(),
-  BLOB_READ_WRITE_TOKEN: z.string().min(1),
   DIGNUM_DATABASE_URL: z.url(),
-  RESEND_API_KEY: z.string().startsWith("re_"),
+  /** Absolute path of the folder holding the documents (`public/…`, `protected/…`). */
+  FILES_DIR: z.string().startsWith("/"),
+  SMTP_HOST: z.string().min(1),
+  SMTP_PORT: z.coerce.number().int().positive(),
+  /** Optional so a local mail catcher without authentication can be used. */
+  SMTP_USER: z.string().default(""),
+  SMTP_PASSWORD: z.string().default(""),
   EMAIL_FROM: z.string().min(3),
   SESSION_SECRET: z.string().min(32),
 });

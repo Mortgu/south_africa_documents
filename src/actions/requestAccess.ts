@@ -1,6 +1,5 @@
 "use server";
 
-import { checkBotId } from "botid/server";
 import { and, count, eq, gt } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -10,7 +9,6 @@ import { env } from "@/lib/env";
 import { createToken, TOKEN_TTL_MS } from "@/lib/tokens";
 
 const MAX_REQUESTS_PER_HOUR = 3;
-const MIN_FILL_TIME_MS = 2000;
 
 const required = (message: string) => z.string().trim().min(1, message).max(100);
 const optional = (schema: z.ZodString) =>
@@ -37,27 +35,7 @@ export type RequestAccessResult =
   | { ok: true }
   | { ok: false; error?: string; fieldErrors?: Partial<Record<RegistrationField, string>> };
 
-/** Spam signals collected by the form, kept out of the profile schema. */
-export type SpamSignals = {
-  /** Hidden honeypot field; humans leave it empty. */
-  website: string;
-  /** Milliseconds between the form rendering and submission. */
-  elapsedMs: number;
-};
-
-export async function requestAccess(
-  input: RegistrationInput,
-  signals: SpamSignals,
-): Promise<RequestAccessResult> {
-  const verification = await checkBotId();
-  if (verification.isBot) {
-    return { ok: false, error: "Your request could not be processed. Please try again later." };
-  }
-  // Pretend success so simple bots don't learn what tripped them.
-  if (signals?.website || !(signals?.elapsedMs >= MIN_FILL_TIME_MS)) {
-    return { ok: true };
-  }
-
+export async function requestAccess(input: RegistrationInput): Promise<RequestAccessResult> {
   const parsed = schema.safeParse(input);
   if (!parsed.success) {
     const fieldErrors: Partial<Record<RegistrationField, string>> = {};

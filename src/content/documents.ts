@@ -5,7 +5,7 @@ export type DocumentEntry = {
   slug: string;
   title: string;
   description: string;
-  /** Pathname in the private Vercel Blob store. Its basename is the downloaded file name. */
+  /** Path below FILES_DIR. Its basename is the downloaded file name. */
   storageKey: string;
   access: DocumentAccess;
 };

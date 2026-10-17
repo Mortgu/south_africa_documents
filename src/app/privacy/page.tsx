@@ -65,13 +65,13 @@ export default function PrivacyPage() {
           We use the following providers, who process information on our behalf:
         </p>
         <ul className="m-0 flex list-disc flex-col gap-1 pl-6 text-body">
-          <li>Vercel Inc. (website hosting and document storage),</li>
-          <li>Neon / Databricks (database),</li>
-          <li>Resend (sending the confirmation email).</li>
+          <li>Hetzner Online GmbH, Germany (website hosting and document storage),</li>
+          <li>[DATABASE PROVIDER] (database),</li>
+          <li>[EMAIL PROVIDER] (sending emails).</li>
         </ul>
         <p className="m-0 text-body">
-          Their servers may be located outside South Africa, for example in the United States or
-          the European Union. When you visit this website, the hosting provider also processes
+          Their servers may be located outside South Africa, for example in the European Union.
+          When you visit this website, the hosting provider also processes
           technical data such as your IP address, browser type and time of access to deliver the
           website securely.
         </p>

@@ -1,0 +1,22 @@
+# systemd unit for the dignum download site.
+# Install: sudo cp deploy/dignum.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#          sudo systemctl enable --now dignum
+# Configuration is read by Next.js from .env.local in the working directory.
+
+[Unit]
+Description=dignum Downloads (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dignum
+Group=dignum
+WorkingDirectory=/srv/dignum/app
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

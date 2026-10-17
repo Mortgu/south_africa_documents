@@ -8,7 +8,6 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    // Migrations use the direct (unpooled) connection.
-    url: process.env.DIGNUM_DATABASE_URL_UNPOOLED ?? process.env.DIGNUM_DATABASE_URL ?? "",
+    url: process.env.DIGNUM_DATABASE_URL ?? "",
   },
 });

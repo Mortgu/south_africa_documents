@@ -2,12 +2,14 @@ import { and, eq, gt, sql } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { subscribers, verificationTokens } from "@/lib/db/schema";
+import { env } from "@/lib/env";
 import { setSessionCookie } from "@/lib/session";
 import { hashToken } from "@/lib/tokens";
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
-  const fail = () => NextResponse.redirect(new URL("/?verify=error", request.url));
+  // Redirects are built from APP_URL: behind the reverse proxy the request URL may point at 127.0.0.1.
+  const fail = () => NextResponse.redirect(new URL("/?verify=error", env().APP_URL));
   if (!token) return fail();
 
   // Tokens stay valid until they expire rather than being single-use: corporate mail
@@ -49,7 +51,7 @@ export async function GET(request: NextRequest) {
     })
     .returning({ id: subscribers.id, email: subscribers.email });
 
-  const target = new URL("/?verified=1#protected", request.url);
+  const target = new URL("/?verified=1#protected", env().APP_URL);
   const response = NextResponse.redirect(target);
   await setSessionCookie(response, { subscriberId: subscriber.id, email: subscriber.email });
   return response;

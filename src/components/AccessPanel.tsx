@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useTransition, type InputHTMLAttributes } from "react";
+import { useEffect, useState, useTransition, type InputHTMLAttributes } from "react";
 import {
   requestAccess,
   type RegistrationField,
@@ -40,12 +40,6 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [pending, startTransition] = useTransition();
-  const honeypotRef = useRef<HTMLInputElement>(null);
-  const renderedAtRef = useRef(0);
-
-  useEffect(() => {
-    renderedAtRef.current = Date.now();
-  }, []);
 
   // Drop ?verify=error from the URL so a reload doesn't show the notice again.
   useEffect(() => {
@@ -87,10 +81,7 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
     if (Object.keys(validate(values, consent)).length > 0) return;
     startTransition(async () => {
       const input: RegistrationInput = { ...values, consent: true };
-      const result = await requestAccess(input, {
-        website: honeypotRef.current?.value ?? "",
-        elapsedMs: Date.now() - renderedAtRef.current,
-      });
+      const result = await requestAccess(input);
       if (result.ok) {
         setSent(true);
         setTried(false);
@@ -182,13 +173,6 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
           autoComplete="tel" value={values.phone} onChange={set("phone")} />
         <Field id="email" label="Email" required type="email" placeholder="name@company.co.za"
           error={errors.email} autoComplete="email" value={values.email} onChange={set("email")} />
-      </div>
-
-      {/* Honeypot: hidden from people, but naive bots fill every input. */}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
-        <label htmlFor="reg-website">Website</label>
-        <input ref={honeypotRef} id="reg-website" name="website" type="text" tabIndex={-1}
-          autoComplete="off" defaultValue="" />
       </div>
 
       <label className="flex cursor-pointer items-start gap-3 text-sm leading-normal text-body">
