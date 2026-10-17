@@ -10,12 +10,14 @@ Runs on a single server behind a reverse proxy, see [`deploy/README.md`](deploy/
 
 ```bash
 npm install
+docker compose up -d         # Postgres + Mailpit, see compose.yml for the matching .env.local values
 cp .env.example .env.local   # fill in values
 npm run db:migrate           # create/update tables
 npm run dev
 ```
 
-For local mail, run a catcher such as [Mailpit](https://mailpit.axllent.org) (`SMTP_HOST=localhost`, `SMTP_PORT=1025`).
+Mails sent locally show up in Mailpit at http://localhost:8025. Point `FILES_DIR` at a local
+folder with `public/` and `protected/` inside (e.g. copies of `test.pdf`).
 
 ## Adding a document
 

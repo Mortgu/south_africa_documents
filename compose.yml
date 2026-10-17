@@ -1,0 +1,36 @@
+# Local development services: Postgres and a mail catcher. The app itself runs on the host
+# with `npm run dev`. Start with `docker compose up -d`, then in .env.local:
+#
+#   DIGNUM_DATABASE_URL=postgres://dignum:dignum@localhost:5432/dignum
+#   SMTP_HOST=localhost
+#   SMTP_PORT=1025
+#   SMTP_USER=
+#   SMTP_PASSWORD=
+#
+# Received mails: http://localhost:8025
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: dignum
+      POSTGRES_PASSWORD: dignum
+      POSTGRES_DB: dignum
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dignum -d dignum"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:1025:1025" # SMTP
+      - "127.0.0.1:8025:8025" # web UI
+
+volumes:
+  db-data:
