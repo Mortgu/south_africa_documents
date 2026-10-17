@@ -187,7 +187,8 @@ Die Seite soll stattdessen auf einem **eigenen Hetzner-Server** laufen. Die Date
 - Datenübernahme aus Neon (nur Testdaten).
 - Automatische Backups, Hetzner-Server-Backups, Monitoring und Alerting.
 - Docker, CI/CD, Pipeline, Preview-Deployments, Zero-Downtime-Deploys.
-- Jeglicher Bot-Schutz über das bestehende Rate-Limit hinaus (BotID, Turnstile, Honeypot, Mindest-Ausfüllzeit). Kann bei Spam später nachgerüstet werden.
+- Bot-Schutz über Rate-Limit und Proof-of-Work hinaus (BotID, Turnstile, Honeypot, Mindest-Ausfüllzeit).
+  - **Nachtrag 2026-10-17:** Ergänzt wurde ein selbst gehosteter Proof-of-Work (`altcha-lib`, PBKDF2/SHA-256, cost 1000, Zähler 2.000–4.000, Challenge 10 min gültig, signiert mit aus `SESSION_SECRET` abgeleiteten Schlüsseln, jede Lösung nur einmal gültig, gespeichert im Prozessspeicher). Er läuft in einem zusätzlichen Bestätigungsschritt nach „Submit & unlock“: Der Besucher klickt „Send confirmation link“, der Browser löst die Aufgabe, erst dann wird die Mail angefordert. „Resend the link“ löst ebenfalls eine neue Aufgabe.
 - Weiterhin auf Vercel lauffähig bleiben (dafür gibt es den Branch `vercel`).
 - Austausch der Platzhalter-Dokumente und -Texte in der Dokumentenliste (alle Einträge zeigen derzeit auf `public/test.pdf` bzw. `protected/test.pdf`).
 - Abschalten bzw. Löschen des Vercel-Projekts und des Neon-Projekts. Das erledigt der Betreiber von Hand, **nachdem** die Hetzner-Version läuft.

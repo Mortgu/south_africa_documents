@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { verificationTokens } from "@/lib/db/schema";
 import { sendVerificationEmail } from "@/lib/email";
 import { env } from "@/lib/env";
+import { createPowChallenge, verifyPow, type Challenge, type Solution } from "@/lib/pow";
 import { createToken, TOKEN_TTL_MS } from "@/lib/tokens";
 
 const MAX_REQUESTS_PER_HOUR = 3;
@@ -35,7 +36,21 @@ export type RequestAccessResult =
   | { ok: true }
   | { ok: false; error?: string; fieldErrors?: Partial<Record<RegistrationField, string>> };
 
-export async function requestAccess(input: RegistrationInput): Promise<RequestAccessResult> {
+/** Proof-of-work the browser solves when the visitor confirms sending the email. */
+export type ProofOfWork = { challenge: Challenge; solution: Solution };
+
+export async function getChallenge(): Promise<Challenge> {
+  return createPowChallenge();
+}
+
+export async function requestAccess(
+  input: RegistrationInput,
+  proof: ProofOfWork,
+): Promise<RequestAccessResult> {
+  if (!proof?.challenge || !proof.solution || !(await verifyPow(proof.challenge, proof.solution))) {
+    return { ok: false, error: "The security check failed. Please try again." };
+  }
+
   const parsed = schema.safeParse(input);
   if (!parsed.success) {
     const fieldErrors: Partial<Record<RegistrationField, string>> = {};

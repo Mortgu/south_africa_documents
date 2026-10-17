@@ -16,8 +16,10 @@ npm run db:migrate           # create/update tables
 npm run dev
 ```
 
-Mails sent locally show up in Mailpit at http://localhost:8025. Point `FILES_DIR` at a local
-folder with `public/` and `protected/` inside (e.g. copies of `test.pdf`).
+Mails sent locally show up in Mailpit at http://localhost:8025. For development, point
+`FILES_DIR` at the absolute path of the repo's `documents/` folder (contains `test.pdf` samples).
+Never put documents below `public/`: Next.js serves that folder to everyone, bypassing the
+access check.
 
 ## Adding a document
 

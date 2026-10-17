@@ -1,9 +1,12 @@
 "use client";
 
+import { solveChallenge } from "altcha-lib";
+import { deriveKey } from "altcha-lib/algorithms/web/pbkdf2";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, type InputHTMLAttributes } from "react";
 import {
+  getChallenge,
   requestAccess,
   type RegistrationField,
   type RegistrationInput,
@@ -38,7 +41,9 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
   const [tried, setTried] = useState(false);
   const [serverErrors, setServerErrors] = useState<Errors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
+  // form → confirm (second click, solves the proof-of-work) → sent
+  const [step, setStep] = useState<"form" | "confirm" | "sent">("form");
+  const sent = step === "sent";
   const [pending, startTransition] = useTransition();
 
   // Drop ?verify=error from the URL so a reload doesn't show the notice again.
@@ -79,14 +84,30 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
     setTried(true);
     setFormError(null);
     if (Object.keys(validate(values, consent)).length > 0) return;
+    setStep("confirm");
+  }
+
+  /** Solves a fresh proof-of-work challenge in the browser, then requests the email. */
+  function send() {
+    setFormError(null);
     startTransition(async () => {
+      const challenge = await getChallenge().catch(() => null);
+      const solution =
+        challenge && (await solveChallenge({ challenge, deriveKey, timeout: 60_000 }).catch(() => null));
+      if (!challenge || !solution) {
+        setFormError("The security check could not be completed. Please try again.");
+        return;
+      }
       const input: RegistrationInput = { ...values, consent: true };
-      const result = await requestAccess(input);
+      const result = await requestAccess(input, { challenge, solution });
       if (result.ok) {
-        setSent(true);
+        setStep("sent");
         setTried(false);
+      } else if (result.fieldErrors && Object.keys(result.fieldErrors).length > 0) {
+        setServerErrors(result.fieldErrors);
+        setFormError(result.error ?? null);
+        setStep("form");
       } else {
-        setServerErrors(result.fieldErrors ?? {});
         setFormError(result.error ?? null);
       }
     });
@@ -110,7 +131,7 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
             type="button"
             onClick={() => {
               setFormError(null);
-              setSent(false);
+              setStep("form");
             }}
             className="btn btn-ghost px-5 pt-[15px] pb-[13px]"
           >
@@ -121,7 +142,7 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
           Didn&apos;t receive an email? Check your spam folder or{" "}
           <button
             type="button"
-            onClick={submit}
+            onClick={send}
             disabled={pending}
             className="cursor-pointer text-accent transition-colors hover:text-ink"
           >
@@ -129,6 +150,47 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
           </button>
           .
         </p>
+      </div>
+    );
+  }
+
+  if (step === "confirm") {
+    return (
+      <div className="flex flex-col gap-5 bg-mist p-6 lg:p-9">
+        <div className="flex flex-col gap-1.5">
+          <h3 className="m-0 text-2xl leading-[1.3] font-normal">One more step</h3>
+          <p className="m-0 text-[15px] leading-relaxed text-body">
+            We&apos;ll send a confirmation link to{" "}
+            <strong className="font-semibold text-ink">{values.email.trim()}</strong>. When you
+            continue, your browser briefly runs a security check to keep bots out.
+          </p>
+        </div>
+        {formError && (
+          <span role="alert" className="text-sm text-error">
+            {formError}
+          </span>
+        )}
+        <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            type="button"
+            onClick={() => {
+              setFormError(null);
+              setStep("form");
+            }}
+            disabled={pending}
+            className="btn btn-ghost px-5 pt-[15px] pb-[13px]"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            onClick={send}
+            disabled={pending}
+            className="btn btn-primary w-full px-8 pt-[17px] pb-[15px] text-sm sm:w-auto"
+          >
+            {pending ? "Verifying…" : "Send confirmation link"}
+          </button>
+        </div>
       </div>
     );
   }
@@ -202,10 +264,9 @@ export function AccessPanel({ verifyFailed }: { verifyFailed: boolean }) {
         <span className="text-[13px] text-muted">* Required field</span>
         <button
           type="submit"
-          disabled={pending}
           className="btn btn-primary w-full px-8 pt-[17px] pb-[15px] text-sm sm:w-auto"
         >
-          {pending ? "Sending…" : "Submit & unlock"}
+          Submit &amp; unlock
         </button>
       </div>
     </form>
