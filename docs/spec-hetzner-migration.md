@@ -3,6 +3,8 @@
 > Status: **ready-for-agent** · Erstellt am 2026-10-16 aus einer Grilling-Session · Ausgangsstand `main` = `d8a062f`
 > Die Umsetzung ist bewusst noch **nicht** gestartet.
 
+> **Nachtrag 2026-10-17 – Zielumgebung geändert:** Der Server ist kein eigener Cloud-Server, sondern ein **Hetzner Managed Server/Webhosting (konsoleH)** ohne Root und ohne konsoleH-Zugang für den Betreiber. Die Hosting-Umgebung startet fest `~/public_html/atf_dignum_co_za/app.js` (Log `~/node.log`) und leitet die Domain inkl. TLS dorthin. Deshalb: kein systemd, kein separater Reverse Proxy; `app.js` ist eine Kopie von `deploy/hetzner-app.js` (Next.js Custom Server), der die gebaute App aus `~/apps/dignum` startet. Neustart: Prozess beenden, die Hosting-Umgebung startet ihn neu. Cron per `crontab` auf die öffentliche URL. Abschnitte unten zu systemd, `127.0.0.1:3000`, Proxy-Übergabe und `journalctl` sind dadurch überholt; maßgeblich ist `deploy/README.md`.
+
 ## Problem Statement
 
 Die Download-Seite (öffentliche und per E-Mail-Bestätigung geschützte Dokumente, Registrierungsformular, Staff-Benachrichtigung) läuft heute auf Vercel und nutzt dort mehrere Vercel-eigene Dienste: Vercel Blob für die Dateien, Vercel Cron für die stündliche Staff-Benachrichtigung, BotID als Bot-Schutz und Neon (über die Vercel-Integration) als Datenbank. Mails gehen über Resend.
