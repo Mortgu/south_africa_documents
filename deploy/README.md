@@ -55,6 +55,12 @@ tail -n 20 ~/node.log
 If the site stays down after that, the restart has to be triggered in konsoleH
 (Node.js configuration → deactivate / activate) by someone with access.
 
+## Pre-launch password
+
+While `SITE_PASSWORD` is set in `.env.local`, every page asks for user `SITE_USER` (default
+`dignum`) and that password. Only `/api/cron/notify` stays reachable (it has its own token).
+To go live: delete the `SITE_PASSWORD` line, then restart (above).
+
 ## Uploading documents
 
 Copy the files into `FILES_DIR` so that the path matches the `storageKey` in
